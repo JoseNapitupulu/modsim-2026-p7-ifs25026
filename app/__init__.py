@@ -13,10 +13,14 @@ def create_app():
 
     @app.route("/")
     def index():
-        return "API telah berjalan!"
+        return send_from_directory(app.static_folder, "index.html")
 
     @app.route("/ui")
     def ui():
         return send_from_directory(app.static_folder, "index.html")
+
+    @app.route("/health")
+    def health():
+        return "API telah berjalan!"
 
     return app

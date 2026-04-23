@@ -1,0 +1,102 @@
+GET http://127.0.0.1:5000/
+
+## Global Variables
+@baseurl=http://127.0.0.1:5000
+
+## Generate Description
+# @name PostGenerateDescription
+POST {{baseurl}}/descriptions/generate
+Content-Type: application/json
+
+{
+  "product_name": "Smart Bottle 500ml",
+  "features": [
+    "Bebas BPA",
+    "Menjaga suhu minuman 12 jam",
+    "Tutup anti bocor"
+  ],
+  "platform": "Tokopedia",
+  "tone": "persuasif"
+}
+###
+
+## Response PostGenerateDescription
+{
+  "id": 1,
+  "content": "Bawa gaya hidup sehatmu ke level berikutnya dengan Smart Bottle 500ml...",
+  "created_at": "2026-04-22T14:00:00.000000",
+  "request": {
+    "id": 1,
+    "product_name": "Smart Bottle 500ml",
+    "features": [
+      "Bebas BPA",
+      "Menjaga suhu minuman 12 jam",
+      "Tutup anti bocor"
+    ],
+    "platform": "Tokopedia",
+    "tone": "persuasif",
+    "created_at": "2026-04-22T14:00:00.000000"
+  }
+}
+###
+
+## Open UI
+GET {{baseurl}}/ui
+Content-Type: application/json
+###
+
+## Get Descriptions
+# @name GetDescriptions
+GET {{baseurl}}/descriptions
+Content-Type: application/json
+###
+
+POST https://openrouter.ai/api/v1/chat/completions
+Authorization: Bearer sk-or-v1-xxxx
+Content-Type: application/json
+
+{
+  "model": "openai/gpt-3.5-turbo",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Halo"
+    }
+  ]
+}
+
+## Response GetDescriptions
+{
+  "total": 1,
+  "data": [
+    {
+      "id": 1,
+      "content": "Bawa gaya hidup sehatmu ke level berikutnya dengan Smart Bottle 500ml...",
+      "created_at": "2026-04-22T14:00:00.000000",
+      "request": {
+        "id": 1,
+        "product_name": "Smart Bottle 500ml",
+        "features": [
+          "Bebas BPA",
+          "Menjaga suhu minuman 12 jam",
+          "Tutup anti bocor"
+        ],
+        "platform": "Tokopedia",
+        "tone": "persuasif",
+        "created_at": "2026-04-22T14:00:00.000000"
+      }
+    }
+  ]
+}
+###
+
+## Delete Description
+DELETE {{baseurl}}/descriptions/1
+Content-Type: application/json
+###
+
+## Response Delete Description
+{
+  "message": "Description deleted"
+}
+###

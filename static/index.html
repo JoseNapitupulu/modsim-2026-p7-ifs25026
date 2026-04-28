@@ -28,6 +28,8 @@
             --radius: 18px;
             --shadow: 0 16px 38px rgba(40, 35, 27, 0.12);
             --shadow-soft: 0 8px 20px rgba(42, 38, 31, 0.09);
+            --mx: 50%;
+            --my: 50%;
         }
 
         body {
@@ -69,11 +71,54 @@
             top: 34%;
         }
 
+        .bg-interactive {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .mesh-layer {
+            position: absolute;
+            inset: -12%;
+            opacity: 0.55;
+            background:
+                radial-gradient(circle at 15% 25%, rgba(15, 124, 130, 0.2), transparent 34%),
+                radial-gradient(circle at 78% 62%, rgba(241, 152, 92, 0.2), transparent 36%),
+                radial-gradient(circle at 56% 12%, rgba(123, 192, 190, 0.18), transparent 30%);
+            animation: driftMesh 24s ease-in-out infinite alternate;
+        }
+
+        .grid-layer {
+            position: absolute;
+            inset: -100px;
+            background-image:
+                linear-gradient(rgba(51, 87, 106, 0.09) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(51, 87, 106, 0.09) 1px, transparent 1px);
+            background-size: 44px 44px;
+            mask-image: radial-gradient(circle at 50% 45%, rgba(0, 0, 0, 0.85), transparent 72%);
+            animation: driftGrid 35s linear infinite;
+            opacity: 0.42;
+        }
+
+        .spotlight-layer {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(260px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0)),
+                radial-gradient(360px circle at calc(var(--mx) + 10%) calc(var(--my) + 8%), rgba(15, 124, 130, 0.18), rgba(15, 124, 130, 0));
+            transition: background-position 0.15s ease;
+            opacity: 0.85;
+        }
+
         main {
             max-width: 980px;
             margin: 0 auto;
             display: grid;
             gap: 1rem;
+            position: relative;
+            z-index: 1;
         }
 
         .hero {
@@ -358,6 +403,40 @@
             padding: 1.25rem;
             backdrop-filter: blur(4px);
             animation: fadeUp 0.65s ease both;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.28s ease, box-shadow 0.28s ease;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, rgba(15, 124, 130, 0.8), rgba(245, 157, 90, 0.75));
+            opacity: 0.9;
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            right: -75px;
+            bottom: -75px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(24, 160, 163, 0.2), rgba(24, 160, 163, 0));
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 28px rgba(37, 47, 61, 0.16);
+        }
+
+        .card:nth-of-type(2n)::before {
+            background: linear-gradient(90deg, rgba(63, 114, 166, 0.78), rgba(126, 192, 133, 0.68));
         }
 
         .card:nth-of-type(2) {
@@ -366,6 +445,14 @@
 
         .card:nth-of-type(3) {
             animation-delay: 0.1s;
+        }
+
+        .stagger-up {
+            margin-top: 0.35rem;
+        }
+
+        .stagger-down {
+            margin-top: 0.7rem;
         }
 
         .card h2 {
@@ -627,6 +714,24 @@
             }
         }
 
+        @keyframes driftMesh {
+            from {
+                transform: translate3d(-2%, 0, 0) scale(1);
+            }
+            to {
+                transform: translate3d(2%, -1.2%, 0) scale(1.05);
+            }
+        }
+
+        @keyframes driftGrid {
+            from {
+                transform: translate3d(0, 0, 0);
+            }
+            to {
+                transform: translate3d(-44px, -44px, 0);
+            }
+        }
+
         @keyframes pulseSoft {
             0%,
             100% {
@@ -737,6 +842,11 @@
                 padding: 1.05rem;
             }
 
+            .stagger-up,
+            .stagger-down {
+                margin-top: 0;
+            }
+
             .grid {
                 grid-template-columns: 1fr;
             }
@@ -760,6 +870,12 @@
     </style>
 </head>
 <body>
+    <div class="bg-interactive" aria-hidden="true">
+        <span class="mesh-layer"></span>
+        <span class="grid-layer"></span>
+        <span class="spotlight-layer"></span>
+    </div>
+
     <aside class="watermark-sidebar">
         <span class="wm-title">Made by</span>
         <span class="wm-name">Jose Napitupulu</span>
@@ -813,7 +929,7 @@
             </div>
         </header>
 
-        <section class="card">
+        <section class="card stagger-up">
             <h2>Form Input</h2>
             <div class="grid">
                 <div>
@@ -852,12 +968,12 @@
             <div id="status" class="status"></div>
         </section>
 
-        <section class="card" id="result-card" style="display:none;">
+        <section class="card stagger-down" id="result-card" style="display:none;">
             <h2>Hasil Generate</h2>
             <div id="result-content" class="result-box"></div>
         </section>
 
-        <section class="card">
+        <section class="card stagger-up">
             <h2>Riwayat Deskripsi</h2>
             <div id="history" class="muted">Klik Refresh Riwayat untuk memuat data.</div>
         </section>
@@ -1024,6 +1140,28 @@
                 setStatus(`Gagal: ${error.message}`, "error");
             }
         }
+
+        function setupInteractiveBackground() {
+            const root = document.documentElement;
+            const updatePosition = (x, y) => {
+                root.style.setProperty("--mx", `${x}px`);
+                root.style.setProperty("--my", `${y}px`);
+            };
+
+            window.addEventListener("pointermove", (event) => {
+                updatePosition(event.clientX, event.clientY);
+            });
+
+            window.addEventListener("touchmove", (event) => {
+                if (!event.touches || event.touches.length === 0) {
+                    return;
+                }
+                const touch = event.touches[0];
+                updatePosition(touch.clientX, touch.clientY);
+            }, { passive: true });
+        }
+
+        setupInteractiveBackground();
     </script>
 </body>
 </html>
